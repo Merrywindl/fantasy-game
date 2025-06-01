@@ -504,24 +504,24 @@ const App: React.FC = () => {
     };
 
     // Weighted enemy class selection function
-    function getWeightedEnemyClass(playerClassName: string) {
+    function getWeightedEnemyClass(playerClassType: string) {
         // Set base probabilities as percentages (must sum to 100)
         const probabilities: { [key: string]: number } = {
             Warrior: 5,
             Mage: 5,
             Archer: 5,
-            Adventurer: 5, // Swapped: Adventurer is now 5%
-            Rabbit: 9,     // Swapped: Rabbit is now 9%
+            Adventurer: 5,
+            Rabbit: 9,
             Squirrel: 15,
             Rat: 60,
         };
 
         // Determine which class the player is weakest to
         let weakestClass: string | null = null;
-        if (playerClassName === "Warrior") weakestClass = "Mage";
-        else if (playerClassName === "Mage") weakestClass = "Archer";
-        else if (playerClassName === "Archer") weakestClass = "Warrior";
-        else if (playerClassName === "Adventurer") weakestClass = null;
+        if (playerClassType === "Warrior") weakestClass = "Mage";
+        else if (playerClassType === "Mage") weakestClass = "Archer";
+        else if (playerClassType === "Archer") weakestClass = "Warrior";
+        else if (playerClassType === "Adventurer") weakestClass = null;
 
         // Set weakest class probability to 1% if applicable
         if (weakestClass && probabilities[weakestClass] !== undefined) {
@@ -529,8 +529,8 @@ const App: React.FC = () => {
         }
 
         // Set player's class probability to lowest (1%) if not already set as weakest
-        if (probabilities[playerClassName] !== undefined && playerClassName !== weakestClass) {
-            probabilities[playerClassName] = 1;
+        if (probabilities[playerClassType] !== undefined && playerClassType !== weakestClass) {
+            probabilities[playerClassType] = 1;
         }
 
         // Ensure Adventurer is always 5%
@@ -571,15 +571,15 @@ const App: React.FC = () => {
             else playerClass = new Adventurer();
             const newPlayer = new Player(name, playerClass);
 
-            // Use weighted enemy selection
-            const EnemyClass = getWeightedEnemyClass(playerClass.constructor.name);
+            // Use .type instead of constructor.name
+            const EnemyClass = getWeightedEnemyClass(playerClass.type);
             const enemyInstance: any = new EnemyClass();
-            const enemyName = enemyInstance.constructor.name;
+            const enemyName = enemyInstance.type || enemyInstance.name || "Enemy";
             const prefix =
-                enemyInstance.constructor.name === "Archer" ||
-                enemyInstance.constructor.name === "Mage" ||
-                enemyInstance.constructor.name === "Adventurer" ||
-                enemyInstance.constructor.name === "Warrior"
+                enemyInstance.type === "Archer" ||
+                enemyInstance.type === "Mage" ||
+                enemyInstance.type === "Adventurer" ||
+                enemyInstance.type === "Warrior"
                     ? "Dark"
                     : "Wild";
             const newEnemy = new Player(enemyName, enemyInstance);
@@ -587,10 +587,9 @@ const App: React.FC = () => {
             setPlayer(newPlayer);
             setEnemy(newEnemy);
             setLogs([
-                `A ${prefix} ${enemyInstance.constructor.name} appears!`,
+                `A ${prefix} ${enemyName} appears!`,
                 `Battle Start!`,
                 `${newPlayer.name} vs ${newEnemy.name}`,
-                
                 `Enemy health: ${newEnemy.playerClass.health}`,
             ]);
             setStep("battle");
@@ -761,14 +760,14 @@ const App: React.FC = () => {
 
     const handleKeepAdventuring = () => {
         if (!player) return;
-        const EnemyClass = getWeightedEnemyClass(player.playerClass.constructor.name);
+        const EnemyClass = getWeightedEnemyClass(player.playerClass.type);
         const enemyInstance: any = new EnemyClass();
-        const enemyName = enemyInstance.constructor.name;
+        const enemyName = enemyInstance.type || enemyInstance.name || "Enemy";
         const prefix =
-            enemyInstance.constructor.name === "Archer" ||
-            enemyInstance.constructor.name === "Mage" ||
-            enemyInstance.constructor.name === "Adventurer" ||
-            enemyInstance.constructor.name === "Warrior"
+            enemyInstance.type === "Archer" ||
+            enemyInstance.type === "Mage" ||
+            enemyInstance.type === "Adventurer" ||
+            enemyInstance.type === "Warrior"
                 ? "Dark"
                 : "Wild";
         // Do NOT reset player inventory or potions here!
@@ -780,7 +779,7 @@ const App: React.FC = () => {
 
         setEnemy(newEnemy);
         setLogs([
-            `A ${prefix} ${enemyInstance.constructor.name} appears!`,
+            `A ${prefix} ${enemyName} appears!`,
             `Battle Start!`,
             `${player.name} vs ${newEnemy.name}`,
             `Enemy health: ${newEnemy.playerClass.health}`,
@@ -823,7 +822,7 @@ const App: React.FC = () => {
                     <strong>{player.name}</strong>
                 </span>
                 <span>
-                    Class: <strong>{player.playerClass.constructor.name}</strong>
+                    Class: <strong>{player.playerClass.type}</strong>
                 </span>
                 <span>
                     Level: <strong>{player.level}</strong>
