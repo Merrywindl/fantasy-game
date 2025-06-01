@@ -28,6 +28,7 @@ class Squirrel {
 
 // Define player classes
 class Warrior {
+    type = "Warrior";
     damage: number;
     health: number;
     ap: number;
@@ -55,6 +56,7 @@ class Warrior {
 }
 
 class Mage {
+    type = "Mage";
     damage: number;
     health: number;
     ap: number;
@@ -82,6 +84,7 @@ class Mage {
 }
 
 class Archer {
+    type = "Archer";
     damage: number;
     health: number;
     ap: number;
@@ -110,6 +113,7 @@ class Archer {
 
 // Adventurer class
 class Adventurer {
+    type = "Adventurer";
     damage: number;
     health: number;
     ap: number;
