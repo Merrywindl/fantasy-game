@@ -41,17 +41,15 @@ class Warrior {
     }
 
     dealDamage(target: Warrior | Mage | Archer | Adventurer) {
+        let dmg = this.damage;
         if (target.type === "Mage") {
-            return this.damage * 1.5; // 50% more damage to Mage
+            dmg = this.damage * 1.5;
+        } else if (target.type === "Archer") {
+            dmg = this.damage * 1.1;
+        } else if (target.type === "Warrior") {
+            dmg = this.damage * 0.8;
         }
-        if (target.type === "Archer") {
-            return this.damage * 1.1; // 10% more damage to Archer
-        }
-        if (target.type === "Warrior") {
-            return this.damage * 0.8; // 20% less damage to Warrior
-        }
-        // Normal damage to Adventurer
-        return this.damage;
+        return Math.round(dmg);
     }
 }
 
@@ -69,17 +67,15 @@ class Mage {
     }
 
     dealDamage(target: Warrior | Mage | Archer | Adventurer) {
+        let dmg = this.damage;
         if (target.type === "Warrior") {
-            return this.damage * 1.5; // 50% more damage to Warrior
+            dmg = this.damage * 1.5;
+        } else if (target.type === "Archer") {
+            dmg = this.damage * 0.7;
+        } else if (target.type === "Adventurer") {
+            dmg = this.damage * 0.85;
         }
-        if (target.type === "Archer") {
-            return this.damage * 0.7; // 30% less damage to Archer
-        }
-        if (target.type === "Adventurer") {
-            return this.damage * 0.85; // 15% less damage to Adventurer
-        }
-        // Normal damage to Mage
-        return this.damage;
+        return Math.round(dmg);
     }
 }
 
@@ -97,17 +93,15 @@ class Archer {
     }
 
     dealDamage(target: Warrior | Mage | Archer | Adventurer) {
+        let dmg = this.damage;
         if (target.type === "Mage") {
-            return this.damage * 1.5; // 50% more damage to Mage
+            dmg = this.damage * 1.5;
+        } else if (target.type === "Warrior") {
+            dmg = this.damage * 0.5;
+        } else if (target.type === "Archer") {
+            dmg = this.damage * 0.8;
         }
-        if (target.type === "Warrior") {
-            return this.damage * 0.5; // 50% damage to Warrior
-        }
-        if (target.type === "Archer") {
-            return this.damage * 0.8; // 80% damage to Archer
-        }
-        // Normal damage to Adventurer
-        return this.damage;
+        return Math.round(dmg);
     }
 }
 
@@ -125,7 +119,7 @@ class Adventurer {
     }
 
     dealDamage(_target: Warrior | Mage | Archer | Adventurer) {
-        return this.damage; // Regular damage to all classes
+        return Math.round(this.damage);
     }
 }
 
@@ -240,6 +234,8 @@ function getBattleLog(
             if (Math.random() < playerCritChance) {
                 damage = Math.round(damage * 1.5);
                 crit = true;
+            } else {
+                damage = Math.round(damage);
             }
             enemy.playerClass.health -= damage;
             if (enemy.playerClass.health < 0) enemy.playerClass.health = 0;
@@ -288,6 +284,8 @@ function getBattleLog(
             if (Math.random() < enemyCritChance) {
                 enemyDamage = Math.round(enemyDamage * 1.5);
                 crit = true;
+            } else {
+                enemyDamage = Math.round(enemyDamage);
             }
             player.playerClass.health -= enemyDamage;
             if (player.playerClass.health < 0) player.playerClass.health = 0;
@@ -308,7 +306,7 @@ function getBattleLog(
         if (player.potions > 0) {
             // Calculate heal amount: 50% of max HP, up to 60
             const maxHP = player.playerClass.maxHealth;
-            const healAmount = Math.min(Math.floor(maxHP * 0.5), 60);
+            const healAmount = Math.round(Math.min(Math.floor(maxHP * 0.5), 60));
             player.playerClass.health += healAmount;
             if (player.playerClass.health > maxHP) player.playerClass.health = maxHP;
             player.potions -= 1;
@@ -654,7 +652,7 @@ const App: React.FC = () => {
 
         if (itemObj && itemObj.name === "Small Health Potion" && itemObj.count > 0) {
             const maxHP = player.playerClass.maxHealth;
-            const intendedHeal = Math.min(Math.floor(maxHP * 0.5), 70);
+            const intendedHeal = Math.round(Math.min(Math.floor(maxHP * 0.5), 70));
             const missingHP = maxHP - player.playerClass.health;
             const healAmount = Math.max(0, Math.min(intendedHeal, missingHP));
 
@@ -695,6 +693,8 @@ const App: React.FC = () => {
                     if (Math.random() < enemyCritChance) {
                         enemyDamage = Math.round(enemyDamage * 1.5);
                         crit = true;
+                    } else {
+                        enemyDamage = Math.round(enemyDamage);
                     }
                     newPlayerClass.health -= enemyDamage;
                     if (newPlayerClass.health < 0) newPlayerClass.health = 0;
