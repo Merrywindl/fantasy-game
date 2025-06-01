@@ -41,13 +41,13 @@ class Warrior {
     }
 
     dealDamage(target: Warrior | Mage | Archer | Adventurer) {
-        if (target instanceof Mage) {
+        if (target.type === "Mage") {
             return this.damage * 1.5; // 50% more damage to Mage
         }
-        if (target instanceof Archer) {
+        if (target.type === "Archer") {
             return this.damage * 1.1; // 10% more damage to Archer
         }
-        if (target instanceof Warrior) {
+        if (target.type === "Warrior") {
             return this.damage * 0.8; // 20% less damage to Warrior
         }
         // Normal damage to Adventurer
@@ -69,13 +69,13 @@ class Mage {
     }
 
     dealDamage(target: Warrior | Mage | Archer | Adventurer) {
-        if (target instanceof Warrior) {
+        if (target.type === "Warrior") {
             return this.damage * 1.5; // 50% more damage to Warrior
         }
-        if (target instanceof Archer) {
+        if (target.type === "Archer") {
             return this.damage * 0.7; // 30% less damage to Archer
         }
-        if (target instanceof Adventurer) {
+        if (target.type === "Adventurer") {
             return this.damage * 0.85; // 15% less damage to Adventurer
         }
         // Normal damage to Mage
@@ -97,13 +97,13 @@ class Archer {
     }
 
     dealDamage(target: Warrior | Mage | Archer | Adventurer) {
-        if (target instanceof Mage) {
+        if (target.type === "Mage") {
             return this.damage * 1.5; // 50% more damage to Mage
         }
-        if (target instanceof Warrior) {
+        if (target.type === "Warrior") {
             return this.damage * 0.5; // 50% damage to Warrior
         }
-        if (target instanceof Archer) {
+        if (target.type === "Archer") {
             return this.damage * 0.8; // 80% damage to Archer
         }
         // Normal damage to Adventurer
@@ -111,7 +111,6 @@ class Archer {
     }
 }
 
-// Adventurer class
 class Adventurer {
     type = "Adventurer";
     damage: number;
@@ -265,8 +264,8 @@ function getBattleLog(
             ) {
                 xpGained = 5;
                 // Double XP if player is at disadvantage
-                const playerClass = player.playerClass.constructor.name;
-                const enemyClass = enemy.playerClass.constructor.name;
+                const playerClass = player.playerClass.type;
+                const enemyClass = enemy.playerClass.type;
                 const disadvantage =
                     (playerClass === "Warrior" && enemyClass === "Mage") ||
                     (playerClass === "Mage" && enemyClass === "Archer") ||
@@ -308,14 +307,7 @@ function getBattleLog(
     } else if (action === "3") {
         if (player.potions > 0) {
             // Calculate heal amount: 50% of max HP, up to 60
-            const maxHP =
-                player.playerClass instanceof Warrior
-                    ? 140
-                    : player.playerClass instanceof Mage
-                    ? 80
-                    : player.playerClass instanceof Archer
-                    ? 90
-                    : 100;
+            const maxHP = player.playerClass.maxHealth;
             const healAmount = Math.min(Math.floor(maxHP * 0.5), 60);
             player.playerClass.health += healAmount;
             if (player.playerClass.health > maxHP) player.playerClass.health = maxHP;
@@ -669,11 +661,11 @@ const App: React.FC = () => {
 
             // Create a new playerClass instance and set health
             let newPlayerClass;
-            if (player.playerClass instanceof Warrior) {
+            if (player.playerClass.type === "Warrior") {
                 newPlayerClass = new Warrior();
-            } else if (player.playerClass instanceof Mage) {
+            } else if (player.playerClass.type === "Mage") {
                 newPlayerClass = new Mage();
-            } else if (player.playerClass instanceof Archer) {
+            } else if (player.playerClass.type === "Archer") {
                 newPlayerClass = new Archer();
             } else {
                 newPlayerClass = new Adventurer();
@@ -681,7 +673,6 @@ const App: React.FC = () => {
             // Copy over current health, then heal
             newPlayerClass.health = Math.min(player.playerClass.health + healAmount, maxHP);
             newPlayerClass.ap = player.playerClass.ap;
-            // Also copy maxHealth in case it's needed elsewhere
             newPlayerClass.maxHealth = maxHP;
 
             if (healAmount > 0) {
